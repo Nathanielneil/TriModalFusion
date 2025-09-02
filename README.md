@@ -84,34 +84,34 @@ optimizer.zero_grad()
 
 ```mermaid
 graph TB
-    subgraph INPUT ["🎯 INPUT LAYER"]
-        A1["📢 SPEECH<br/>16kHz Audio"]
-        A2["🤲 GESTURE<br/>Keypoints"]
-        A3["🖼️ IMAGE<br/>224×224"]
+    subgraph INPUT ["INPUT LAYER"]
+        A1["SPEECH<br/>16kHz Audio"]
+        A2["GESTURE<br/>Keypoints"]
+        A3["IMAGE<br/>224×224"]
     end
     
-    subgraph ENCODE ["🧠 ENCODING LAYER"]
-        B1["🔤 Speech<br/>Transformer"]
-        B2["👋 Gesture<br/>GCN+CNN"]
-        B3["🎨 Image<br/>ViT/CNN"]
+    subgraph ENCODE ["ENCODING LAYER"]
+        B1["Speech<br/>Transformer"]
+        B2["Gesture<br/>GCN+CNN"]
+        B3["Image<br/>ViT/CNN"]
     end
     
-    subgraph FUSION ["🔗 FUSION LAYER"]
-        C1["⏰ Temporal<br/>Alignment"]
-        C2["🎯 Semantic<br/>Alignment"]
-        C3["💡 Cross-Modal<br/>Attention"]
+    subgraph FUSION ["FUSION LAYER"]
+        C1["Temporal<br/>Alignment"]
+        C2["Semantic<br/>Alignment"]
+        C3["Cross-Modal<br/>Attention"]
     end
     
-    subgraph INTEGRATE ["🔄 INTEGRATION"]
+    subgraph INTEGRATE ["INTEGRATION LAYER"]
         D1["Feature Fusion"]
         D2["Semantic Fusion"]
         D3["Decision Fusion"]
     end
     
-    subgraph OUTPUT ["📊 OUTPUT LAYER"]
-        E1["🏷️ Classification"]
-        E2["📍 Detection"]
-        E3["📈 Regression"]
+    subgraph OUTPUT ["OUTPUT LAYER"]
+        E1["Classification"]
+        E2["Detection"]
+        E3["Regression"]
     end
     
     A1 --> B1
@@ -146,11 +146,11 @@ graph TB
     D2 --> E3
     D3 --> E3
     
-    classDef inputStyle fill:#e1f5fe,stroke:#0288d1,stroke-width:3px,font-size:14px
-    classDef encoderStyle fill:#f3e5f5,stroke:#7b1fa2,stroke-width:3px,font-size:14px
-    classDef fusionStyle fill:#e8f5e8,stroke:#388e3c,stroke-width:3px,font-size:14px
-    classDef integrationStyle fill:#fff3e0,stroke:#f57c00,stroke-width:3px,font-size:14px
-    classDef outputStyle fill:#fce4ec,stroke:#c2185b,stroke-width:3px,font-size:14px
+    classDef inputStyle fill:#e1f5fe,stroke:#0288d1,stroke-width:3px,font-size:14px,font-weight:bold
+    classDef encoderStyle fill:#f3e5f5,stroke:#7b1fa2,stroke-width:3px,font-size:14px,font-weight:bold
+    classDef fusionStyle fill:#e8f5e8,stroke:#388e3c,stroke-width:3px,font-size:14px,font-weight:bold
+    classDef integrationStyle fill:#fff3e0,stroke:#f57c00,stroke-width:3px,font-size:14px,font-weight:bold
+    classDef outputStyle fill:#fce4ec,stroke:#c2185b,stroke-width:3px,font-size:14px,font-weight:bold
     
     class A1,A2,A3 inputStyle
     class B1,B2,B3 encoderStyle
@@ -163,26 +163,26 @@ graph TB
 
 ```mermaid
 flowchart LR
-    subgraph INPUTS ["📥 INPUTS"]
-        A["📢<br/>SPEECH"]
-        B["🤲<br/>GESTURE"]
-        C["🖼️<br/>IMAGE"]
+    subgraph INPUTS ["INPUT MODALITIES"]
+        A["SPEECH<br/>Waveform"]
+        B["GESTURE<br/>Keypoints"]
+        C["IMAGE<br/>Pixels"]
     end
     
-    subgraph ENCODERS ["🧠 ENCODERS"]
-        D["🔤<br/>TRANSFORMER"]
-        E["🕸️<br/>GCN+CNN"]
-        F["🎨<br/>ViT/CNN"]
+    subgraph ENCODERS ["MODALITY ENCODERS"]
+        D["TRANSFORMER<br/>Encoder"]
+        E["GCN+CNN<br/>Encoder"]
+        F["ViT/CNN<br/>Encoder"]
     end
     
-    subgraph FUSION ["🔗 FUSION"]
-        G["💡<br/>ATTENTION"]
+    subgraph FUSION ["CROSS-MODAL FUSION"]
+        G["MULTI-HEAD<br/>ATTENTION"]
     end
     
-    subgraph OUTPUTS ["📊 OUTPUTS"]
-        H["🏷️<br/>CLASSIFY"]
-        I["📍<br/>DETECT"]
-        J["📈<br/>REGRESS"]
+    subgraph OUTPUTS ["TASK OUTPUTS"]
+        H["CLASSIFICATION<br/>Head"]
+        I["DETECTION<br/>Head"]
+        J["REGRESSION<br/>Head"]
     end
     
     A --> D
@@ -197,12 +197,12 @@ flowchart LR
     G --> I
     G --> J
     
-    style INPUTS fill:#e3f2fd,stroke:#1976d2,stroke-width:3px,color:#000,font-size:16px
-    style ENCODERS fill:#f1f8e9,stroke:#388e3c,stroke-width:3px,color:#000,font-size:16px
-    style FUSION fill:#fff3e0,stroke:#f57c00,stroke-width:3px,color:#000,font-size:16px
-    style OUTPUTS fill:#fce4ec,stroke:#c2185b,stroke-width:3px,color:#000,font-size:16px
+    style INPUTS fill:#e3f2fd,stroke:#1976d2,stroke-width:3px,color:#000,font-size:16px,font-weight:bold
+    style ENCODERS fill:#f1f8e9,stroke:#388e3c,stroke-width:3px,color:#000,font-size:16px,font-weight:bold
+    style FUSION fill:#fff3e0,stroke:#f57c00,stroke-width:3px,color:#000,font-size:16px,font-weight:bold
+    style OUTPUTS fill:#fce4ec,stroke:#c2185b,stroke-width:3px,color:#000,font-size:16px,font-weight:bold
     
-    classDef nodeStyle fill:#ffffff,stroke:#333,stroke-width:2px,font-size:14px,font-weight:bold
+    classDef nodeStyle fill:#ffffff,stroke:#333,stroke-width:3px,font-size:15px,font-weight:bold
     class A,B,C,D,E,F,G,H,I,J nodeStyle
 ```
 
