@@ -1,8 +1,12 @@
 # TriModalFusion: Unified Multimodal Recognition System
 
+<div align="center">
+
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
 [![PyTorch](https://img.shields.io/badge/PyTorch-2.0+-orange.svg)](https://pytorch.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
+
+</div>
 
 TriModalFusion is a deep learning framework for multimodal recognition that integrates speech, gesture, and image processing capabilities. The system implements state-of-the-art architectures including Transformer networks, MediaPipe hand tracking, and Vision Transformers to provide a unified computational platform for multimodal artificial intelligence applications.
 
