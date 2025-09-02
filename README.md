@@ -16,7 +16,6 @@
 [![Docker](https://img.shields.io/badge/Docker-Ready-0db7ed.svg)](https://www.docker.com/)
 [![Kubernetes](https://img.shields.io/badge/Kubernetes-Ready-326CE5.svg)](https://kubernetes.io/)
 [![CUDA](https://img.shields.io/badge/CUDA-Ready-76B900.svg)](https://developer.nvidia.com/cuda-toolkit)
-[![Production](https://img.shields.io/badge/Production-Ready-success.svg)](#)
 
 </div>
 
