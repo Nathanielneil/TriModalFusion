@@ -4,7 +4,19 @@
 
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
 [![PyTorch](https://img.shields.io/badge/PyTorch-2.0+-orange.svg)](https://pytorch.org/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
+[![Lightning](https://img.shields.io/badge/Lightning-2.0+-purple.svg)](https://lightning.ai/)
+[![Transformers](https://img.shields.io/badge/🤗%20Transformers-4.30+-yellow.svg)](https://huggingface.co/transformers/)
+[![OpenCV](https://img.shields.io/badge/OpenCV-4.8+-green.svg)](https://opencv.org/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-brightgreen.svg)](https://opensource.org/licenses/MIT)
+
+[![Speech Recognition](https://img.shields.io/badge/Speech-Recognition-ff6b6b.svg)](#)
+[![Gesture Recognition](https://img.shields.io/badge/Gesture-Recognition-4ecdc4.svg)](#)
+[![Computer Vision](https://img.shields.io/badge/Computer-Vision-45b7d1.svg)](#)
+[![Multimodal AI](https://img.shields.io/badge/Multimodal-AI-6c5ce7.svg)](#)
+[![Docker](https://img.shields.io/badge/Docker-Ready-0db7ed.svg)](https://www.docker.com/)
+[![Kubernetes](https://img.shields.io/badge/Kubernetes-Ready-326CE5.svg)](https://kubernetes.io/)
+[![CUDA](https://img.shields.io/badge/CUDA-Ready-76B900.svg)](https://developer.nvidia.com/cuda-toolkit)
+[![Production](https://img.shields.io/badge/Production-Ready-success.svg)](#)
 
 </div>
 
