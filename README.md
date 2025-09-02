@@ -82,38 +82,125 @@ optimizer.zero_grad()
 
 ### System Architecture
 
+```mermaid
+graph TB
+    subgraph "Input Layer"
+        A1[Speech Input<br/>16kHz Audio]
+        A2[Gesture Input<br/>Video/Keypoints]
+        A3[Image Input<br/>224×224 RGB]
+    end
+    
+    subgraph "Encoding Layer"
+        B1[Speech Encoder<br/>Transformer]
+        B2[Gesture Encoder<br/>MediaPipe + GCN]
+        B3[Image Encoder<br/>ViT/ResNet]
+    end
+    
+    subgraph "Fusion Layer"
+        C1[Temporal Alignment]
+        C2[Semantic Alignment]
+        C3[Cross-Modal Attention]
+    end
+    
+    subgraph "Integration Layer"
+        D1[Feature-Level Fusion]
+        D2[Semantic-Level Fusion]
+        D3[Decision-Level Fusion]
+    end
+    
+    subgraph "Output Layer"
+        E1[Classification Head]
+        E2[Detection Head]
+        E3[Regression Head]
+    end
+    
+    A1 --> B1
+    A2 --> B2
+    A3 --> B3
+    
+    B1 --> C1
+    B2 --> C1
+    B3 --> C1
+    
+    B1 --> C2
+    B2 --> C2
+    B3 --> C2
+    
+    B1 --> C3
+    B2 --> C3
+    B3 --> C3
+    
+    C1 --> D1
+    C2 --> D2
+    C3 --> D3
+    
+    D1 --> E1
+    D2 --> E1
+    D3 --> E1
+    
+    D1 --> E2
+    D2 --> E2
+    D3 --> E2
+    
+    D1 --> E3
+    D2 --> E3
+    D3 --> E3
+    
+    classDef inputStyle fill:#e1f5fe,stroke:#0288d1,stroke-width:2px
+    classDef encoderStyle fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px
+    classDef fusionStyle fill:#e8f5e8,stroke:#388e3c,stroke-width:2px
+    classDef integrationStyle fill:#fff3e0,stroke:#f57c00,stroke-width:2px
+    classDef outputStyle fill:#fce4ec,stroke:#c2185b,stroke-width:2px
+    
+    class A1,A2,A3 inputStyle
+    class B1,B2,B3 encoderStyle
+    class C1,C2,C3 fusionStyle
+    class D1,D2,D3 integrationStyle
+    class E1,E2,E3 outputStyle
 ```
-┌─────────────────────────────────────────────────────────────┐
-│                    Multi-Modal Input Layer                  │
-├─────────────┬─────────────────┬─────────────────────────────┤
-│  Speech     │    Gesture      │        Image               │
-│ (16kHz wav) │ (Video/Keypts)  │      (224x224)             │
-└─────────────┴─────────────────┴─────────────────────────────┘
-       │               │                       │
-       ▼               ▼                       ▼
-┌─────────────┐ ┌─────────────┐ ┌─────────────────────┐
-│Speech Enc.  │ │Gesture Enc. │ │   Image Encoder    │
-│(Transformer)│ │(MediaPipe+  │ │   (ViT/ResNet)     │
-│             │ │ GCN+CNN)    │ │                    │
-└─────────────┘ └─────────────┘ └─────────────────────┘
-       │               │                       │
-       ▼               ▼                       ▼
-┌─────────────────────────────────────────────────────────────┐
-│              Cross-Modal Fusion Layer                      │
-│        (Temporal Alignment + Semantic Alignment)          │
-└─────────────────────────────────────────────────────────────┘
-       │
-       ▼
-┌─────────────────────────────────────────────────────────────┐
-│                Hierarchical Fusion                        │
-│     (Feature Level → Semantic Level → Decision Level)     │
-└─────────────────────────────────────────────────────────────┘
-       │
-       ▼
-┌─────────────────────────────────────────────────────────────┐
-│                Multi-Task Output Heads                    │
-│        (Classification | Detection | Generation)          │
-└─────────────────────────────────────────────────────────────┘
+
+### Data Flow Architecture
+
+```mermaid
+flowchart LR
+    subgraph Inputs [" Input Modalities "]
+        A[Speech<br/>Waveform]
+        B[Gesture<br/>Keypoints]
+        C[Image<br/>Pixels]
+    end
+    
+    subgraph Encoders [" Modality Encoders "]
+        D[Transformer<br/>Encoder]
+        E[GCN + CNN<br/>Encoder]
+        F[ViT/CNN<br/>Encoder]
+    end
+    
+    subgraph Fusion [" Cross-Modal Fusion "]
+        G[Multi-Head<br/>Attention]
+    end
+    
+    subgraph Tasks [" Multi-Task Outputs "]
+        H[Classification]
+        I[Detection]
+        J[Regression]
+    end
+    
+    A --> D
+    B --> E
+    C --> F
+    
+    D --> G
+    E --> G
+    F --> G
+    
+    G --> H
+    G --> I
+    G --> J
+    
+    style Inputs fill:#e3f2fd
+    style Encoders fill:#f1f8e9
+    style Fusion fill:#fff3e0
+    style Tasks fill:#fce4ec
 ```
 
 ### Component Details
