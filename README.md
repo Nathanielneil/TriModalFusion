@@ -47,7 +47,7 @@ TriModalFusion is a deep learning framework for multimodal recognition that inte
 ### Installation
 
 ```bash
-git clone https://github.com/your-repo/TriModalFusion.git
+git clone https://github.com/Nathanielneil/TriModalFusion.git
 cd TriModalFusion
 pip install -r requirements.txt
 ```
@@ -406,7 +406,7 @@ We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guid
 ### Development Setup
 ```bash
 # Clone repository
-git clone https://github.com/your-repo/TriModalFusion.git
+git clone https://github.com/Nathanielneil/TriModalFusion.git
 cd TriModalFusion
 
 # Install development dependencies
