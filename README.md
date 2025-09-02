@@ -434,9 +434,9 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Contact
 
-- **Issues**: [GitHub Issues](https://github.com/your-repo/TriModalFusion/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/your-repo/TriModalFusion/discussions)
-- **Email**: research@trimodal.ai
+- **Issues**: [GitHub Issues](https://github.com/Nathanielneil/TriModalFusion/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/Nathanielneil/TriModalFusion/discussions)
+- **Email**: guowei_ni@bit.edu.cn
 
 ---
 
