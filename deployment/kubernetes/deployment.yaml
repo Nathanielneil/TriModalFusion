@@ -1,0 +1,251 @@
+# TriModalFusion Kubernetes Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: trimodal-api
+  namespace: trimodal
+  labels:
+    app: trimodal-api
+    version: v1.0.0
+spec:
+  replicas: 3
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: trimodal-api
+  template:
+    metadata:
+      labels:
+        app: trimodal-api
+        version: v1.0.0
+    spec:
+      containers:
+      - name: trimodal-api
+        image: trimodal/trimodal-fusion:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8000
+          name: http
+        - containerPort: 8001
+          name: metrics
+        env:
+        - name: CUDA_VISIBLE_DEVICES
+          value: "0"
+        - name: TRIMODAL_CONFIG_PATH
+          value: "/app/configs/production_config.yaml"
+        - name: TRIMODAL_MODEL_PATH
+          value: "/app/models/best_model.pth"
+        - name: REDIS_URL
+          valueFrom:
+            secretKeyRef:
+              name: trimodal-secrets
+              key: redis-url
+        - name: DATABASE_URL
+          valueFrom:
+            secretKeyRef:
+              name: trimodal-secrets
+              key: database-url
+        resources:
+          requests:
+            memory: "4Gi"
+            cpu: "1000m"
+            nvidia.com/gpu: 1
+          limits:
+            memory: "8Gi"
+            cpu: "2000m"
+            nvidia.com/gpu: 1
+        volumeMounts:
+        - name: model-storage
+          mountPath: /app/models
+          readOnly: true
+        - name: config-volume
+          mountPath: /app/configs
+          readOnly: true
+        - name: logs-volume
+          mountPath: /app/logs
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 60
+          periodSeconds: 30
+          timeoutSeconds: 10
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 2
+      nodeSelector:
+        accelerator: nvidia-tesla-v100
+      tolerations:
+      - key: nvidia.com/gpu
+        operator: Exists
+        effect: NoSchedule
+      volumes:
+      - name: model-storage
+        persistentVolumeClaim:
+          claimName: trimodal-model-pvc
+      - name: config-volume
+        configMap:
+          name: trimodal-config
+      - name: logs-volume
+        emptyDir: {}
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: trimodal-api-service
+  namespace: trimodal
+  labels:
+    app: trimodal-api
+spec:
+  selector:
+    app: trimodal-api
+  ports:
+  - name: http
+    port: 80
+    targetPort: 8000
+    protocol: TCP
+  - name: metrics
+    port: 8001
+    targetPort: 8001
+    protocol: TCP
+  type: ClusterIP
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: trimodal-ingress
+  namespace: trimodal
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/proxy-body-size: "100m"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "300"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "300"
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+spec:
+  tls:
+  - hosts:
+    - api.trimodal.example.com
+    secretName: trimodal-tls
+  rules:
+  - host: api.trimodal.example.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: trimodal-api-service
+            port:
+              number: 80
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: trimodal-config
+  namespace: trimodal
+data:
+  production_config.yaml: |
+    model:
+      name: "TriModalFusion"
+      d_model: 512
+      tasks: ["classification"]
+      num_classes: 10
+
+    speech_config:
+      sample_rate: 16000
+      max_audio_length: 16000
+      n_mels: 80
+      encoder_layers: 6
+      encoder_attention_heads: 8
+
+    gesture_config:
+      max_sequence_length: 30
+      num_hands: 2
+      spatial_hidden_dim: 128
+      temporal_hidden_dim: 256
+
+    image_config:
+      img_size: 224
+      image_architecture: "vit"
+      vit_config:
+        embed_dim: 512
+        depth: 12
+        num_heads: 8
+
+    fusion_config:
+      alignment_method: "attention"
+      fusion_strategy: "hierarchical"
+      fusion_heads: 8
+      use_contrastive_loss: true
+
+    serving:
+      device: "cuda"
+      batch_size: 16
+      half_precision: true
+      model_path: "/app/models/best_model.pth"
+
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: trimodal-secrets
+  namespace: trimodal
+type: Opaque
+stringData:
+  redis-url: "redis://trimodal-redis:6379/0"
+  database-url: "postgresql://trimodal:password@trimodal-postgres:5432/trimodal"
+  api-key: "your-api-key-here"
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: trimodal-model-pvc
+  namespace: trimodal
+spec:
+  accessModes:
+    - ReadOnlyMany
+  resources:
+    requests:
+      storage: 10Gi
+  storageClassName: fast-ssd
+
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: trimodal-hpa
+  namespace: trimodal
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: trimodal-api
+  minReplicas: 2
+  maxReplicas: 10
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 70
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Utilization
+        averageUtilization: 80

@@ -1,0 +1,340 @@
+# TriModalFusion Production Configuration
+# ====================================
+
+model:
+  name: "TriModalFusion"
+  d_model: 512
+  tasks: ["classification"]
+  num_classes: 10
+  
+  # 生产环境优化
+  enable_compilation: true
+  precision: "fp16"
+  memory_efficient: true
+
+# 语音配置
+speech_config:
+  sample_rate: 16000
+  max_audio_length: 16000
+  n_mels: 80
+  n_fft: 512
+  hop_length: 160
+  win_length: 400
+  
+  # 编码器配置
+  encoder_layers: 6
+  encoder_attention_heads: 8
+  encoder_hidden_dim: 512
+  encoder_dropout: 0.1
+  
+  # 生产优化
+  use_conv_pos_embed: true
+  layer_norm_first: true
+
+# 手势配置
+gesture_config:
+  max_sequence_length: 30
+  num_hands: 2
+  num_keypoints: 21
+  coordinate_dim: 3
+  
+  # 空间处理
+  spatial_hidden_dim: 128
+  spatial_layers: 3
+  spatial_dropout: 0.1
+  
+  # 时序处理
+  temporal_hidden_dim: 256
+  temporal_kernel_size: 3
+  temporal_layers: 4
+  temporal_dropout: 0.1
+  
+  # MediaPipe配置
+  use_mediapipe: true
+  detection_confidence: 0.7
+  tracking_confidence: 0.5
+
+# 图像配置
+image_config:
+  img_size: 224
+  image_architecture: "vit"  # or "cnn"
+  
+  # ViT配置
+  vit_config:
+    embed_dim: 512
+    depth: 12
+    num_heads: 8
+    mlp_ratio: 4.0
+    dropout: 0.1
+    attention_dropout: 0.1
+    drop_path_rate: 0.1
+  
+  # CNN配置（备选）
+  cnn_config:
+    backbone: "efficientnet_b4"
+    pretrained: true
+    num_features: 1792
+    global_pool: "avg"
+
+# 融合配置
+fusion_config:
+  # 对齐方式
+  alignment_method: "attention"  # interpolation, attention, dtw
+  
+  # 融合策略
+  fusion_strategy: "hierarchical"  # concat, attention, hierarchical
+  fusion_heads: 8
+  fusion_dropout: 0.1
+  
+  # 对比学习
+  use_contrastive_loss: true
+  contrastive_temperature: 0.07
+  contrastive_margin: 0.2
+  
+  # 跨模态注意力
+  cross_modal_layers: 3
+  cross_modal_heads: 8
+  cross_modal_dim: 512
+
+# 训练配置（用于微调）
+training:
+  batch_size: 16
+  learning_rate: 1e-4
+  weight_decay: 1e-2
+  max_epochs: 100
+  
+  # 优化器
+  optimizer: "adamw"
+  adamw_betas: [0.9, 0.999]
+  adamw_eps: 1e-8
+  
+  # 学习率调度
+  scheduler: "cosine_warmup"
+  warmup_epochs: 10
+  cosine_eta_min: 1e-6
+  
+  # 正则化
+  label_smoothing: 0.1
+  dropout: 0.1
+  drop_path: 0.1
+  
+  # 混合精度
+  mixed_precision: true
+  gradient_accumulation_steps: 1
+  max_grad_norm: 1.0
+  
+  # 早停
+  early_stopping_patience: 15
+  monitor_metric: "val/f1"
+  monitor_mode: "max"
+  
+  # 检查点
+  save_top_k: 3
+  save_every: 5
+  checkpoint_dir: "checkpoints"
+  
+  # 日志
+  log_every: 50
+  use_wandb: true
+  wandb_project: "trimodal-fusion-prod"
+
+# 服务配置
+serving:
+  # 模型设置
+  model_path: "/app/models/best_model.pth"
+  device: "cuda"
+  half_precision: true
+  batch_size: 16
+  
+  # 性能设置
+  max_concurrent_requests: 100
+  request_timeout: 30
+  inference_timeout: 10
+  
+  # 缓存设置
+  enable_model_cache: true
+  enable_result_cache: true
+  cache_ttl: 3600
+  
+  # 预处理设置
+  preprocess_workers: 4
+  preprocess_timeout: 5
+  
+  # TensorRT优化（NVIDIA GPU）
+  enable_tensorrt: true
+  tensorrt_precision: "fp16"
+  tensorrt_max_batch_size: 32
+
+# 系统配置
+system:
+  # 设备设置
+  device: "auto"  # auto, cpu, cuda
+  precision: 16   # 16, 32
+  
+  # 内存管理
+  memory_optimization:
+    gradient_checkpointing: false  # 推理时不需要
+    cpu_offload: false
+    zero_optimization: false
+  
+  # 模型编译
+  compile_model: true
+  compile_mode: "max-autotune"  # default, reduce-overhead, max-autotune
+  
+  # 多进程
+  num_workers: 4
+  pin_memory: true
+  prefetch_factor: 2
+
+# 数据配置
+data:
+  # 预处理
+  normalize_audio: true
+  normalize_images: true
+  normalize_gestures: true
+  
+  # 数据增强（推理时关闭）
+  audio_augmentation: false
+  image_augmentation: false
+  gesture_augmentation: false
+  
+  # 文件格式
+  supported_audio_formats: [".wav", ".mp3", ".m4a", ".flac"]
+  supported_image_formats: [".jpg", ".jpeg", ".png", ".bmp"]
+  supported_gesture_formats: [".json", ".mp4", ".avi"]
+
+# 监控配置
+monitoring:
+  # 指标收集
+  enable_metrics: true
+  metrics_port: 8001
+  metrics_interval: 30
+  
+  # 日志配置
+  log_level: "INFO"
+  log_format: "json"
+  enable_request_logging: true
+  enable_performance_logging: true
+  
+  # 健康检查
+  health_check_interval: 30
+  health_check_timeout: 10
+  
+  # 性能分析
+  enable_profiling: false
+  profiling_interval: 300
+
+# 安全配置
+security:
+  # API认证
+  enable_api_key: true
+  api_key_header: "X-API-Key"
+  
+  # 速率限制
+  rate_limiting:
+    enable: true
+    requests_per_minute: 600
+    burst_size: 50
+  
+  # 文件上传限制
+  max_file_size: "100MB"
+  allowed_file_types: [".wav", ".jpg", ".json", ".mp4"]
+  
+  # CORS设置
+  cors:
+    allow_origins: ["*"]
+    allow_methods: ["GET", "POST"]
+    allow_headers: ["*"]
+    allow_credentials: true
+
+# 存储配置
+storage:
+  # 模型存储
+  model_storage_type: "local"  # local, s3, gcs
+  model_storage_path: "/app/models"
+  
+  # 临时文件
+  temp_storage_path: "/tmp"
+  temp_file_ttl: 3600
+  
+  # 结果缓存
+  result_storage_type: "redis"
+  result_storage_url: "redis://redis:6379/0"
+  
+  # 日志存储
+  log_storage_type: "local"
+  log_storage_path: "/app/logs"
+
+# 数据库配置
+database:
+  # 主数据库
+  url: "postgresql://trimodal:password@postgres:5432/trimodal"
+  echo: false
+  pool_size: 5
+  max_overflow: 10
+  pool_timeout: 30
+  
+  # 迁移
+  auto_upgrade: true
+  create_tables: true
+
+# 消息队列配置
+message_queue:
+  # 任务队列
+  broker_url: "redis://redis:6379/1"
+  result_backend: "redis://redis:6379/1"
+  
+  # 任务配置
+  task_serializer: "json"
+  result_serializer: "json"
+  accept_content: ["json"]
+  
+  # 工作进程
+  worker_concurrency: 2
+  worker_prefetch_multiplier: 1
+  task_acks_late: true
+  worker_max_tasks_per_child: 1000
+
+# 部署配置
+deployment:
+  # 环境
+  environment: "production"
+  debug: false
+  
+  # 服务发现
+  service_name: "trimodal-api"
+  service_port: 8000
+  service_health_endpoint: "/health"
+  
+  # 负载均衡
+  load_balancer:
+    algorithm: "round_robin"
+    health_check_interval: 10
+    max_fails: 3
+    fail_timeout: 30
+  
+  # 自动扩展
+  autoscaling:
+    enable: true
+    min_replicas: 2
+    max_replicas: 10
+    target_cpu_utilization: 70
+    target_memory_utilization: 80
+    scale_up_cooldown: 60
+    scale_down_cooldown: 300
+
+# 备份配置
+backup:
+  # 模型备份
+  enable_model_backup: true
+  model_backup_interval: "daily"
+  model_backup_retention: 30
+  
+  # 数据备份
+  enable_data_backup: true
+  data_backup_interval: "daily"
+  data_backup_retention: 7
+  
+  # 配置备份
+  enable_config_backup: true
+  config_backup_retention: 90

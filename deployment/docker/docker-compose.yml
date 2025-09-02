@@ -1,0 +1,198 @@
+# TriModalFusion Production Deployment
+version: '3.8'
+
+services:
+  # 主要推理服务
+  trimodal-api:
+    build:
+      context: ../..
+      dockerfile: deployment/docker/Dockerfile
+    container_name: trimodal-api
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    volumes:
+      - ../../models:/app/models:ro
+      - ../../configs:/app/configs:ro
+      - trimodal-logs:/app/logs
+      - trimodal-data:/app/data
+    environment:
+      - CUDA_VISIBLE_DEVICES=0
+      - TRIMODAL_CONFIG_PATH=/app/configs/production_config.yaml
+      - TRIMODAL_MODEL_PATH=/app/models/best_model.pth
+      - REDIS_URL=redis://redis:6379/0
+      - DATABASE_URL=postgresql://trimodal:password@postgres:5432/trimodal
+    depends_on:
+      - redis
+      - postgres
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    healthcheck:
+      test: ["CMD", "python3", "-c", "import requests; requests.get('http://localhost:8000/health')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  # 负载均衡器
+  nginx:
+    image: nginx:alpine
+    container_name: trimodal-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./ssl:/etc/nginx/ssl:ro
+      - trimodal-nginx-logs:/var/log/nginx
+    depends_on:
+      - trimodal-api
+
+  # Redis缓存
+  redis:
+    image: redis:7-alpine
+    container_name: trimodal-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - trimodal-redis-data:/data
+      - ./redis.conf:/usr/local/etc/redis/redis.conf:ro
+    command: redis-server /usr/local/etc/redis/redis.conf
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  # PostgreSQL数据库
+  postgres:
+    image: postgres:15-alpine
+    container_name: trimodal-postgres
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: trimodal
+      POSTGRES_USER: trimodal
+      POSTGRES_PASSWORD: password
+    volumes:
+      - trimodal-postgres-data:/var/lib/postgresql/data
+      - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U trimodal -d trimodal"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  # 监控服务
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: trimodal-prometheus
+    restart: unless-stopped
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - trimodal-prometheus-data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+
+  # 可视化监控
+  grafana:
+    image: grafana/grafana:latest
+    container_name: trimodal-grafana
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: admin
+      GF_USERS_ALLOW_SIGN_UP: false
+    volumes:
+      - trimodal-grafana-data:/var/lib/grafana
+      - ./grafana/dashboards:/var/lib/grafana/dashboards:ro
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+    depends_on:
+      - prometheus
+
+  # 日志聚合
+  elasticsearch:
+    image: elasticsearch:8.11.0
+    container_name: trimodal-elasticsearch
+    restart: unless-stopped
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - "ES_JAVA_OPTS=-Xms1g -Xmx1g"
+    ports:
+      - "9200:9200"
+    volumes:
+      - trimodal-elasticsearch-data:/usr/share/elasticsearch/data
+
+  # 任务队列
+  celery-worker:
+    build:
+      context: ../..
+      dockerfile: deployment/docker/Dockerfile
+    container_name: trimodal-celery-worker
+    restart: unless-stopped
+    command: celery -A deployment.tasks worker --loglevel=info --concurrency=2
+    volumes:
+      - ../../models:/app/models:ro
+      - ../../configs:/app/configs:ro
+      - trimodal-data:/app/data
+    environment:
+      - CELERY_BROKER_URL=redis://redis:6379/1
+      - CELERY_RESULT_BACKEND=redis://redis:6379/1
+    depends_on:
+      - redis
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+
+  # 任务监控
+  flower:
+    build:
+      context: ../..
+      dockerfile: deployment/docker/Dockerfile
+    container_name: trimodal-flower
+    restart: unless-stopped
+    command: celery -A deployment.tasks flower --port=5555
+    ports:
+      - "5555:5555"
+    environment:
+      - CELERY_BROKER_URL=redis://redis:6379/1
+      - CELERY_RESULT_BACKEND=redis://redis:6379/1
+    depends_on:
+      - redis
+      - celery-worker
+
+# 网络配置
+networks:
+  default:
+    name: trimodal-network
+    driver: bridge
+
+# 数据卷
+volumes:
+  trimodal-logs:
+  trimodal-data:
+  trimodal-nginx-logs:
+  trimodal-redis-data:
+  trimodal-postgres-data:
+  trimodal-prometheus-data:
+  trimodal-grafana-data:
+  trimodal-elasticsearch-data:

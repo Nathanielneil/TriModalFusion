@@ -1,0 +1,191 @@
+# TriModalFusion Default Configuration
+
+# Model Architecture
+model:
+  name: "TriModalFusion"
+  d_model: 512
+  target_seq_length: 256
+  
+  # Task configuration
+  tasks: ["classification"]
+  num_classes: 10
+  num_detection_classes: 80
+  regression_dim: 1
+  vocab_size: 50000
+
+# Modality-specific configurations
+speech_config:
+  # Audio processing
+  sample_rate: 16000
+  n_mels: 80
+  n_fft: 1024
+  hop_length: 256
+  
+  # Model architecture
+  n_head: 8
+  n_layer: 6
+  d_ff: 2048
+  dropout: 0.1
+  max_audio_length: 3000
+  pooling: "mean"  # 'mean', 'max', 'cls', 'attention'
+  
+gesture_config:
+  # Gesture processing
+  num_hands: 2
+  num_joints: 21
+  input_dim: 3  # x, y, z coordinates
+  use_mediapipe: true
+  min_detection_confidence: 0.5
+  min_tracking_confidence: 0.5
+  
+  # Spatial GCN
+  spatial_hidden_dim: 64
+  spatial_out_dim: 128
+  spatial_layers: 2
+  
+  # Temporal CNN
+  temporal_hidden_dim: 256
+  temporal_layers: 3
+  temporal_kernel_size: 3
+  
+  # Aggregation
+  spatial_aggregation: "mean"  # 'mean', 'max', 'attention'
+  pooling: "mean"
+  dropout: 0.1
+
+image_config:
+  # Image processing
+  img_size: 224
+  image_mean: [0.485, 0.456, 0.406]
+  image_std: [0.229, 0.224, 0.225]
+  in_channels: 3
+  
+  # Architecture choice
+  image_architecture: "vit"  # 'vit' or 'cnn'
+  
+  # ViT specific
+  patch_size: 16
+  vit_embed_dim: 768
+  vit_depth: 12
+  vit_num_heads: 12
+  mlp_ratio: 4.0
+  drop_path_rate: 0.1
+  use_cls_token: true
+  representation_size: null
+  
+  # CNN specific
+  cnn_arch: "resnet50"
+  cnn_embed_dim: 2048
+  
+  # Detection
+  enable_detection: false
+  dropout: 0.1
+
+# Fusion Configuration
+fusion_config:
+  # Temporal alignment
+  alignment_method: "interpolation"  # 'interpolation', 'attention', 'learned'
+  alignment_heads: 8
+  
+  # Semantic alignment
+  projection_dim: 256
+  similarity_type: "cosine"  # 'cosine', 'bilinear', 'mlp'
+  pooling_method: "mean"
+  
+  # Cross-modal fusion
+  fusion_strategy: "attention"  # 'attention', 'concat', 'add', 'adaptive'
+  fusion_heads: 8
+  fusion_layers: 2
+  use_pairwise_attention: false
+  
+  # Hierarchical fusion
+  num_fusion_levels: 3
+  use_skip_connections: true
+  
+  # Regularization
+  alignment_weight: 0.1
+  dropout: 0.1
+
+# Training Configuration
+training:
+  # Optimization
+  optimizer: "adamw"
+  learning_rate: 1e-4
+  weight_decay: 1e-2
+  betas: [0.9, 0.999]
+  eps: 1e-8
+  
+  # Scheduling
+  scheduler: "cosine"
+  warmup_steps: 4000
+  warmup_method: "linear"
+  max_steps: 100000
+  
+  # Regularization
+  gradient_clip: 1.0
+  label_smoothing: 0.1
+  dropout: 0.1
+  
+  # Batch settings
+  batch_size: 32
+  accumulate_grad_batches: 1
+  
+  # Loss weights
+  task_weights:
+    classification: 1.0
+    detection: 1.0
+    regression: 1.0
+    generation: 1.0
+  
+  # Data
+  num_workers: 4
+  pin_memory: true
+  persistent_workers: true
+
+# Evaluation Configuration
+evaluation:
+  # Metrics
+  compute_detailed_metrics: true
+  save_predictions: true
+  
+  # Validation
+  val_check_interval: 1000
+  val_metric: "accuracy"
+  
+  # Testing
+  test_batch_size: 64
+
+# System Configuration
+system:
+  # Hardware
+  device: "auto"  # 'auto', 'cuda', 'cpu'
+  mixed_precision: true
+  compile_model: false
+  
+  # Checkpointing
+  save_top_k: 3
+  monitor: "val_accuracy"
+  mode: "max"
+  
+  # Logging
+  log_level: "INFO"
+  log_every_n_steps: 100
+  
+  # Reproducibility
+  seed: 42
+  deterministic: false
+
+# Paths
+paths:
+  data_dir: "./data"
+  output_dir: "./outputs"
+  checkpoint_dir: "./checkpoints"
+  log_dir: "./logs"
+  cache_dir: "./cache"
+
+# Experiment
+experiment:
+  name: "trimodal_fusion_experiment"
+  version: "1.0"
+  tags: ["multimodal", "fusion", "speech", "gesture", "image"]
+  description: "TriModalFusion baseline experiment"
