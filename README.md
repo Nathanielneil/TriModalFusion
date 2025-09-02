@@ -84,34 +84,34 @@ optimizer.zero_grad()
 
 ```mermaid
 graph TB
-    subgraph "Input Layer"
-        A1[Speech Input<br/>16kHz Audio]
-        A2[Gesture Input<br/>Video/Keypoints]
-        A3[Image Input<br/>224×224 RGB]
+    subgraph INPUT ["🎯 INPUT LAYER"]
+        A1["📢 SPEECH<br/>16kHz Audio"]
+        A2["🤲 GESTURE<br/>Keypoints"]
+        A3["🖼️ IMAGE<br/>224×224"]
     end
     
-    subgraph "Encoding Layer"
-        B1[Speech Encoder<br/>Transformer]
-        B2[Gesture Encoder<br/>MediaPipe + GCN]
-        B3[Image Encoder<br/>ViT/ResNet]
+    subgraph ENCODE ["🧠 ENCODING LAYER"]
+        B1["🔤 Speech<br/>Transformer"]
+        B2["👋 Gesture<br/>GCN+CNN"]
+        B3["🎨 Image<br/>ViT/CNN"]
     end
     
-    subgraph "Fusion Layer"
-        C1[Temporal Alignment]
-        C2[Semantic Alignment]
-        C3[Cross-Modal Attention]
+    subgraph FUSION ["🔗 FUSION LAYER"]
+        C1["⏰ Temporal<br/>Alignment"]
+        C2["🎯 Semantic<br/>Alignment"]
+        C3["💡 Cross-Modal<br/>Attention"]
     end
     
-    subgraph "Integration Layer"
-        D1[Feature-Level Fusion]
-        D2[Semantic-Level Fusion]
-        D3[Decision-Level Fusion]
+    subgraph INTEGRATE ["🔄 INTEGRATION"]
+        D1["Feature Fusion"]
+        D2["Semantic Fusion"]
+        D3["Decision Fusion"]
     end
     
-    subgraph "Output Layer"
-        E1[Classification Head]
-        E2[Detection Head]
-        E3[Regression Head]
+    subgraph OUTPUT ["📊 OUTPUT LAYER"]
+        E1["🏷️ Classification"]
+        E2["📍 Detection"]
+        E3["📈 Regression"]
     end
     
     A1 --> B1
@@ -146,11 +146,11 @@ graph TB
     D2 --> E3
     D3 --> E3
     
-    classDef inputStyle fill:#e1f5fe,stroke:#0288d1,stroke-width:2px
-    classDef encoderStyle fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px
-    classDef fusionStyle fill:#e8f5e8,stroke:#388e3c,stroke-width:2px
-    classDef integrationStyle fill:#fff3e0,stroke:#f57c00,stroke-width:2px
-    classDef outputStyle fill:#fce4ec,stroke:#c2185b,stroke-width:2px
+    classDef inputStyle fill:#e1f5fe,stroke:#0288d1,stroke-width:3px,font-size:14px
+    classDef encoderStyle fill:#f3e5f5,stroke:#7b1fa2,stroke-width:3px,font-size:14px
+    classDef fusionStyle fill:#e8f5e8,stroke:#388e3c,stroke-width:3px,font-size:14px
+    classDef integrationStyle fill:#fff3e0,stroke:#f57c00,stroke-width:3px,font-size:14px
+    classDef outputStyle fill:#fce4ec,stroke:#c2185b,stroke-width:3px,font-size:14px
     
     class A1,A2,A3 inputStyle
     class B1,B2,B3 encoderStyle
@@ -163,26 +163,26 @@ graph TB
 
 ```mermaid
 flowchart LR
-    subgraph Inputs [" Input Modalities "]
-        A[Speech<br/>Waveform]
-        B[Gesture<br/>Keypoints]
-        C[Image<br/>Pixels]
+    subgraph INPUTS ["📥 INPUTS"]
+        A["📢<br/>SPEECH"]
+        B["🤲<br/>GESTURE"]
+        C["🖼️<br/>IMAGE"]
     end
     
-    subgraph Encoders [" Modality Encoders "]
-        D[Transformer<br/>Encoder]
-        E[GCN + CNN<br/>Encoder]
-        F[ViT/CNN<br/>Encoder]
+    subgraph ENCODERS ["🧠 ENCODERS"]
+        D["🔤<br/>TRANSFORMER"]
+        E["🕸️<br/>GCN+CNN"]
+        F["🎨<br/>ViT/CNN"]
     end
     
-    subgraph Fusion [" Cross-Modal Fusion "]
-        G[Multi-Head<br/>Attention]
+    subgraph FUSION ["🔗 FUSION"]
+        G["💡<br/>ATTENTION"]
     end
     
-    subgraph Tasks [" Multi-Task Outputs "]
-        H[Classification]
-        I[Detection]
-        J[Regression]
+    subgraph OUTPUTS ["📊 OUTPUTS"]
+        H["🏷️<br/>CLASSIFY"]
+        I["📍<br/>DETECT"]
+        J["📈<br/>REGRESS"]
     end
     
     A --> D
@@ -197,10 +197,13 @@ flowchart LR
     G --> I
     G --> J
     
-    style Inputs fill:#e3f2fd
-    style Encoders fill:#f1f8e9
-    style Fusion fill:#fff3e0
-    style Tasks fill:#fce4ec
+    style INPUTS fill:#e3f2fd,stroke:#1976d2,stroke-width:3px,color:#000,font-size:16px
+    style ENCODERS fill:#f1f8e9,stroke:#388e3c,stroke-width:3px,color:#000,font-size:16px
+    style FUSION fill:#fff3e0,stroke:#f57c00,stroke-width:3px,color:#000,font-size:16px
+    style OUTPUTS fill:#fce4ec,stroke:#c2185b,stroke-width:3px,color:#000,font-size:16px
+    
+    classDef nodeStyle fill:#ffffff,stroke:#333,stroke-width:2px,font-size:14px,font-weight:bold
+    class A,B,C,D,E,F,G,H,I,J nodeStyle
 ```
 
 ### Component Details
