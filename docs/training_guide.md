@@ -1299,4 +1299,4 @@ def prune_model(model, pruning_ratio=0.2):
     return model
 ```
 
-这个训练指南提供了完整的训练流程，从数据准备到模型部署的每个环节都有详细说明，确保用户能够成功训练和优化TriModalFusion模型。
+这个训练指南提供了完整的训练流程，从数据准备到模型部署的每个环节都有详细说明，确保能够成功训练和优化TriModalFusion模型。
