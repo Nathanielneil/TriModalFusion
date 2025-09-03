@@ -353,7 +353,7 @@ model = TriModalFusionModel(config)
 # 自定义数据集
 class MultimodalDataset(torch.utils.data.Dataset):
     def __init__(self, data_path):
-        # 加载您的多模态数据集
+        # 加载多模态数据集
         pass
     
     def __getitem__(self, idx):
