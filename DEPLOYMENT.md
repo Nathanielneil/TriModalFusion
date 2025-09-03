@@ -419,8 +419,3 @@ resources:
 - [故障排除指南](./troubleshooting.md)
 
 ---
-
-如需技术支持，请访问：
-- GitHub Issues: https://github.com/your-org/TriModalFusion/issues
-- 技术文档: https://trimodal-docs.example.com
-- 社区讨论: https://discord.gg/trimodal
