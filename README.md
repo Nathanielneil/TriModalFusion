@@ -16,7 +16,6 @@
 [![Docker](https://img.shields.io/badge/Docker-Ready-0db7ed.svg)](https://www.docker.com/)
 [![Kubernetes](https://img.shields.io/badge/Kubernetes-Ready-326CE5.svg)](https://kubernetes.io/)
 [![CUDA](https://img.shields.io/badge/CUDA-Ready-76B900.svg)](https://developer.nvidia.com/cuda-toolkit)
-[![Production](https://img.shields.io/badge/Production-Ready-success.svg)](#)
 
 </div>
 
@@ -47,7 +46,7 @@ TriModalFusion is a deep learning framework for multimodal recognition that inte
 ### Installation
 
 ```bash
-git clone https://github.com/your-repo/TriModalFusion.git
+git clone https://github.com/Nathanielneil/TriModalFusion.git
 cd TriModalFusion
 pip install -r requirements.txt
 ```
@@ -406,7 +405,7 @@ We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guid
 ### Development Setup
 ```bash
 # Clone repository
-git clone https://github.com/your-repo/TriModalFusion.git
+git clone https://github.com/Nathanielneil/TriModalFusion.git
 cd TriModalFusion
 
 # Install development dependencies
@@ -434,9 +433,9 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Contact
 
-- **Issues**: [GitHub Issues](https://github.com/your-repo/TriModalFusion/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/your-repo/TriModalFusion/discussions)
-- **Email**: research@trimodal.ai
+- **Issues**: [GitHub Issues](https://github.com/Nathanielneil/TriModalFusion/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/Nathanielneil/TriModalFusion/discussions)
+- **Email**: guowei_ni@bit.edu.cn
 
 ---
 
