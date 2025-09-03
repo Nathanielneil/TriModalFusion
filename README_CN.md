@@ -443,4 +443,4 @@ flake8 src/ tests/
 
 ---
 
-**TriModalFusion** - 多模态人类交流分析的统一计算框架。
+**TriModalFusion** - 多模态指令处理分析的统一计算框架。
