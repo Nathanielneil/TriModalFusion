@@ -1,5 +1,9 @@
 # TriModalFusion: Unified Multimodal Recognition System
 
+<p align="right">
+<strong>Language</strong>: <a href="README.md">English</a> | <a href="README_CN.md">中文</a>
+</p>
+
 <div align="center">
 
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
