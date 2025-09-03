@@ -1,0 +1,108 @@
+name: TriModalFusion
+channels:
+  - pytorch
+  - conda-forge
+  - defaults
+
+dependencies:
+  # Python version
+  - python=3.9
+
+  # Core deep learning framework (conda version for better compatibility)
+  - pytorch=2.1.0
+  - torchvision=0.16.0
+  - torchaudio=2.1.0
+  - cpuonly  # Remove this line if you need CUDA support
+
+  # Scientific computing (conda versions for stability)
+  - numpy=1.24.3
+  - scipy=1.10.1
+  - scikit-learn=1.3.0
+
+  # Configuration and utilities
+  - pyyaml=6.0
+  - h5py=3.9.0
+  - pandas=2.0.3
+
+  # Development tools
+  - pip=23.2.1
+  - setuptools=68.0.0
+  - wheel=0.41.0
+
+  # System dependencies
+  - ffmpeg  # For audio processing
+  - git
+  - curl
+
+  # Install remaining packages via pip
+  - pip:
+    # Lightning framework
+    - lightning==2.1.0
+    - pytorch-lightning==2.1.0
+    
+    # Transformer models
+    - transformers==4.35.0
+    - timm==0.9.10
+    - tokenizers==0.14.1
+    
+    # Computer vision and image processing
+    - opencv-python==4.8.1.78
+    - Pillow==10.0.1
+    - albumentations==1.3.1
+    
+    # MediaPipe for hand detection
+    - mediapipe==0.10.7
+    
+    # Audio processing
+    - librosa==0.10.1
+    - soundfile==0.12.1
+    - audioread==3.0.0
+    - resampy==0.4.2
+    
+    # Configuration management
+    - omegaconf==2.3.0
+    - hydra-core==1.3.2
+    
+    # Evaluation and metrics
+    - editdistance==0.6.2
+    - seaborn==0.12.2
+    - matplotlib==3.7.2
+    - plotly==5.17.0
+    
+    # Data handling
+    - datasets==2.14.6
+    - huggingface-hub==0.17.3
+    
+    # Logging and experiment tracking
+    - wandb==0.16.0
+    - tensorboard==2.14.1
+    - rich==13.6.0
+    
+    # Model optimization
+    - onnx==1.15.0
+    - onnxruntime==1.16.1
+    - optimum==1.13.2
+    
+    # Development and testing tools
+    - black==23.9.1
+    - isort==5.12.0
+    - flake8==6.1.0
+    - pytest==7.4.2
+    - pytest-cov==4.1.0
+    - pre-commit==3.4.0
+    
+    # Documentation
+    - sphinx==7.2.6
+    - sphinx-rtd-theme==1.3.0
+    - myst-parser==2.0.0
+    
+    # Utility packages
+    - tqdm==4.66.1
+    - click==8.1.7
+    - python-dotenv==1.0.0
+    - psutil==5.9.5
+    
+    # Optional packages for advanced features
+    - optuna==3.4.0          # Hyperparameter optimization
+    - ray[tune]==2.7.1       # Distributed tuning
+    - streamlit==1.28.0      # Web dashboard

@@ -9,14 +9,26 @@ import torch
 import numpy as np
 from pathlib import Path
 import sys
-
-# Add src to path
-sys.path.append(str(Path(__file__).parent.parent / "src"))
-
-from models.trimodal_fusion import TriModalFusionModel
-from utils.config import load_config
-from utils.logging_utils import setup_logging
+import os
 import logging
+
+# Add project root to Python path
+project_root = Path(__file__).parent.parent
+sys.path.insert(0, str(project_root))
+sys.path.insert(0, str(project_root / "src"))
+
+# Set PYTHONPATH environment variable
+os.environ['PYTHONPATH'] = f"{project_root}:{project_root / 'src'}:{os.environ.get('PYTHONPATH', '')}"
+
+try:
+    from src.models.trimodal_fusion import TriModalFusionModel
+    from src.utils.config import load_config
+    from src.utils.logging_utils import setup_logging
+except ImportError:
+    # Fallback for relative imports
+    from models.trimodal_fusion import TriModalFusionModel
+    from utils.config import load_config
+    from utils.logging_utils import setup_logging
 
 # Setup logging
 setup_logging()
