@@ -1,15 +1,11 @@
 # TriModalFusion: Unified Multimodal Recognition System
 
-<p align="right">
-<strong>Language</strong>: <a href="README.md">English</a> | <a href="README_CN.md">中文</a>
-</p>
-
 <div align="center">
 
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
 [![PyTorch](https://img.shields.io/badge/PyTorch-2.0+-orange.svg)](https://pytorch.org/)
 [![Lightning](https://img.shields.io/badge/Lightning-2.0+-purple.svg)](https://lightning.ai/)
-[![Transformers](https://img.shields.io/badge/🤗%20Transformers-4.30+-yellow.svg)](https://huggingface.co/transformers/)
+[![Transformers](https://img.shields.io/badge/Transformers-4.30+-yellow.svg)](https://huggingface.co/transformers/)
 [![OpenCV](https://img.shields.io/badge/OpenCV-4.8+-green.svg)](https://opencv.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-brightgreen.svg)](https://opensource.org/licenses/MIT)
 
@@ -20,6 +16,10 @@
 [![Docker](https://img.shields.io/badge/Docker-Ready-0db7ed.svg)](https://www.docker.com/)
 [![Kubernetes](https://img.shields.io/badge/Kubernetes-Ready-326CE5.svg)](https://kubernetes.io/)
 [![CUDA](https://img.shields.io/badge/CUDA-Ready-76B900.svg)](https://developer.nvidia.com/cuda-toolkit)
+
+<p>
+<strong>Language</strong>: <a href="README.md">English</a> | <a href="README_CN.md">中文</a>
+</p>
 
 </div>
 
@@ -46,6 +46,31 @@ TriModalFusion is a deep learning framework for multimodal recognition that inte
 - **Evaluation Framework**: Comprehensive metrics computation and model checkpointing capabilities
 
 ## Quick Start
+
+### Web Demo (Recommended)
+
+Launch the interactive web interface for real-time multimodal detection:
+
+```bash
+git clone https://github.com/Nathanielneil/TriModalFusion.git
+cd TriModalFusion
+pip install -r requirements.txt
+
+# Install additional web dependencies
+pip install fastapi uvicorn jinja2 python-multipart websockets pillow
+
+# Start the web demo
+python start_web_demo.py
+
+# Open browser and navigate to http://localhost:8000
+```
+
+**Features:**
+- Real-time camera and microphone input
+- Live multimodal feature visualization
+- Interactive attention weight visualization
+- File upload for batch processing
+- Performance monitoring dashboard
 
 ### Installation
 
@@ -306,6 +331,35 @@ training:
   batch_size: 32
 ```
 
+## Web Interface
+
+The project includes a comprehensive web interface for real-time multimodal detection and visualization. The web demo provides:
+
+### Interface Components
+- **Real-time Input Panel**: Camera video stream, audio visualization, and gesture detection overlay
+- **Results Visualization**: Classification results, confidence scores, and Top-K predictions  
+- **Feature Visualization**: Real-time display of speech, image, and gesture features
+- **Attention Heatmaps**: Cross-modal attention weight visualization
+- **Performance Monitoring**: FPS, latency, and system resource tracking
+- **Detection History**: Timeline of detection results with confidence scores
+
+### API Endpoints
+- `GET /`: Web interface homepage
+- `POST /predict/files`: File upload prediction
+- `WS /ws/detection`: WebSocket for real-time detection
+- `GET /health`: System health check
+- `GET /model/info`: Model information
+- `GET /metrics`: Performance metrics
+
+### Usage Instructions
+1. Start the web server: `python start_web_demo.py`
+2. Open browser to `http://localhost:8000`
+3. Allow camera and microphone access when prompted
+4. Click "Start Detection" to begin real-time analysis
+5. View results in the visualization panels
+
+For detailed web interface documentation, see [WEB_DEMO_README.md](WEB_DEMO_README.md).
+
 ## Examples
 
 ### Real-World Applications
@@ -390,17 +444,20 @@ for batch in dataloader:
 
 ## Documentation
 
-### API Documentation
-- [Model Architecture](docs/model_architecture.md)
-- [Configuration Guide](docs/configuration.md)
-- [Training Guide](docs/training.md)
-- [Evaluation Metrics](docs/evaluation.md)
+### User Guides
+- [Web Demo Guide](WEB_DEMO_README.md) - Comprehensive web interface documentation
+- [Getting Started](docs/getting_started.md) - Basic usage and setup
+- [Configuration Guide](docs/configuration.md) - System configuration options
 
-### Tutorials
-- [Getting Started](docs/getting_started.md)
-- [Custom Datasets](docs/custom_datasets.md)
-- [Advanced Configuration](docs/advanced_config.md)
-- [Deployment Guide](docs/deployment.md)
+### API Documentation  
+- [Model Architecture](docs/model_architecture.md) - Technical architecture details
+- [Training Guide](docs/training.md) - Model training procedures
+- [Evaluation Metrics](docs/evaluation.md) - Performance evaluation methods
+
+### Advanced Topics
+- [Custom Datasets](docs/custom_datasets.md) - Creating custom multimodal datasets
+- [Advanced Configuration](docs/advanced_config.md) - Advanced system configuration
+- [Deployment Guide](docs/deployment.md) - Production deployment strategies
 
 ## Contributing
 

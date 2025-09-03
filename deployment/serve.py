@@ -8,13 +8,16 @@ import asyncio
 import logging
 import time
 import uvicorn
+import json
 from contextlib import asynccontextmanager
 from typing import Dict, List, Optional, Any
 from pathlib import Path
 import argparse
 
-from fastapi import FastAPI, HTTPException, UploadFile, File, Form, BackgroundTasks
-from fastapi.responses import JSONResponse, StreamingResponse
+from fastapi import FastAPI, HTTPException, UploadFile, File, Form, BackgroundTasks, WebSocket, WebSocketDisconnect, Request
+from fastapi.responses import JSONResponse, StreamingResponse, HTMLResponse
+from fastapi.staticfiles import StaticFiles
+from fastapi.templating import Jinja2Templates
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
 from pydantic import BaseModel, Field
@@ -133,13 +136,43 @@ app.add_middleware(
 
 app.add_middleware(GZipMiddleware, minimum_size=1000)
 
+# 挂载静态文件和模板
+app.mount("/static", StaticFiles(directory="web/static"), name="static")
+templates = Jinja2Templates(directory="web/templates")
+
+# WebSocket连接管理
+class ConnectionManager:
+    def __init__(self):
+        self.active_connections: List[WebSocket] = []
+
+    async def connect(self, websocket: WebSocket):
+        await websocket.accept()
+        self.active_connections.append(websocket)
+
+    def disconnect(self, websocket: WebSocket):
+        self.active_connections.remove(websocket)
+
+    async def send_personal_message(self, message: str, websocket: WebSocket):
+        await websocket.send_text(message)
+
+    async def broadcast(self, message: str):
+        for connection in self.active_connections:
+            await connection.send_text(message)
+
+manager = ConnectionManager()
+
 # 记录启动时间
 start_time = time.time()
 
 
-@app.get("/", response_model=Dict[str, str])
-async def root():
-    """根路径"""
+@app.get("/", response_class=HTMLResponse)
+async def web_interface(request: Request):
+    """Web界面主页"""
+    return templates.TemplateResponse("index.html", {"request": request})
+
+@app.get("/api", response_model=Dict[str, str])
+async def api_info():
+    """API信息"""
     return {
         "service": "TriModalFusion API",
         "version": "1.0.0",
@@ -372,6 +405,103 @@ async def get_metrics():
         }
     
     return metrics
+
+
+@app.websocket("/ws/detection")
+async def websocket_detection_endpoint(websocket: WebSocket):
+    """WebSocket实时检测端点"""
+    await manager.connect(websocket)
+    try:
+        while True:
+            # 接收客户端数据
+            data = await websocket.receive_text()
+            message = json.loads(data)
+            
+            if message.get("type") == "detection_request":
+                # 处理检测请求
+                frame_data = message.get("data")
+                
+                try:
+                    # 预处理输入数据
+                    inputs = await process_websocket_data(frame_data)
+                    
+                    # 进行预测
+                    if predictor:
+                        predictions = predictor.predict(
+                            inputs,
+                            return_features=True,
+                            return_attention=True,
+                            temperature=1.0
+                        )
+                        
+                        # 发送预测结果
+                        response = {
+                            "type": "detection_response",
+                            "timestamp": frame_data.get("timestamp"),
+                            "predictions": predictions,
+                            "modalities": list(inputs.keys())
+                        }
+                        
+                        await manager.send_personal_message(
+                            json.dumps(response), websocket
+                        )
+                    else:
+                        await manager.send_personal_message(
+                            json.dumps({"type": "error", "message": "模型未加载"}), 
+                            websocket
+                        )
+                        
+                except Exception as e:
+                    logger.error(f"WebSocket检测错误: {e}")
+                    await manager.send_personal_message(
+                        json.dumps({"type": "error", "message": str(e)}), 
+                        websocket
+                    )
+                    
+    except WebSocketDisconnect:
+        manager.disconnect(websocket)
+        logger.info("WebSocket客户端断开连接")
+
+
+async def process_websocket_data(frame_data: Dict) -> Dict:
+    """处理WebSocket接收的帧数据"""
+    inputs = {}
+    
+    # 处理图像数据
+    if frame_data.get("image"):
+        import base64
+        import io
+        from PIL import Image
+        
+        # Base64解码
+        image_bytes = base64.b64decode(frame_data["image"])
+        image = Image.open(io.BytesIO(image_bytes))
+        
+        # 转换为张量 (这里需要根据预处理器的具体实现)
+        # inputs["image"] = preprocess_image(image)
+        
+    # 处理音频数据
+    if frame_data.get("audio"):
+        # 将音频频谱数据转换为张量
+        audio_data = np.array(frame_data["audio"], dtype=np.float32)
+        # inputs["speech"] = preprocess_audio(audio_data)
+        
+    # 处理手势数据
+    if frame_data.get("gesture"):
+        # 处理手势关键点数据
+        gesture_data = np.array(frame_data["gesture"], dtype=np.float32)
+        # inputs["gesture"] = preprocess_gesture(gesture_data)
+    
+    # 暂时返回模拟数据用于测试
+    if not inputs:
+        import torch
+        inputs = {
+            "speech": torch.randn(1, 16000),
+            "image": torch.randn(1, 3, 224, 224),
+            "gesture": torch.randn(1, 30, 2, 21, 3)
+        }
+    
+    return inputs
 
 
 def main():

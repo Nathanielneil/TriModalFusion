@@ -1,9 +1,5 @@
 # TriModalFusion: 统一多模态识别系统
 
-<p align="right">
-<strong>语言</strong>: <a href="README.md">English</a> | <a href="README_CN.md">中文</a>
-</p>
-
 <div align="center">
 
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
@@ -20,6 +16,10 @@
 [![Docker](https://img.shields.io/badge/Docker-Ready-0db7ed.svg)](https://www.docker.com/)
 [![Kubernetes](https://img.shields.io/badge/Kubernetes-Ready-326CE5.svg)](https://kubernetes.io/)
 [![CUDA](https://img.shields.io/badge/CUDA-Ready-76B900.svg)](https://developer.nvidia.com/cuda-toolkit)
+
+<p>
+<strong>语言</strong>: <a href="README.md">English</a> | <a href="README_CN.md">中文</a>
+</p>
 
 </div>
 
